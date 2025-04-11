@@ -1,0 +1,318 @@
+<app-navbar></app-navbar>
+
+<!-- hero-section -->
+<section>
+  <div class="hero min-h-screen bg-[url('/assets/bookhome.png')] bg-cover">
+    <div class="hero-overlay"></div>
+    <div class="hero-content text-neutral-content text-center">
+      <div class="max-w-md">
+        <h1 class="mb-5 text-5xl font-bold anuphan-regular">Welcome</h1>
+        <p class="mb-5 anuphan-regular">
+          to our second-hand store! Discover a world of great reads at unbeatable prices. Find your next favorite book
+          today and give it a new home!
+        </p>
+        <button class="btn btn-dash anuphan-regular" (click)="scrollToProducts()">Get Started</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- product-section-->
+<section id="product-section" class="w-full h-full bg-white text-gray-700 p-10 rounded-xl anuphan-regular">
+  <!-- Header -->
+  <figure class="diff aspect-16/9 mb-6" tabindex="0">
+    <div class="diff-item-1" role="img">
+      <div
+        class="bg-zinc-100 text-700 grid place-content-center text-3xl sm:text-5xl font-black p-4 rounded-lg shadow-md">
+        PRODUCTS
+      </div>
+    </div>
+    <div class="diff-item-2" role="img" tabindex="0">
+      <div
+        class="bg-gray-700 text-white grid place-content-center text-3xl sm:text-5xl font-black p-4 rounded-lg shadow-md">
+        PRODUCTS
+      </div>
+    </div>
+    <div class="diff-resizer"></div>
+  </figure>
+
+  <!-- Filter Container -->
+  <div class="flex flex-wrap items-center gap-4 my-4">
+    <!-- Search -->
+    <label class="input flex items-center border border-gray-300 rounded-lg p-2 shadow-sm w-full max-w-md bg-white">
+      <svg class="h-[1em] opacity-50 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.3-4.3"></path>
+        </g>
+      </svg>
+      <input type="search" class="grow bg-transparent outline-none"
+        placeholder="Search by title, author, or description..." [(ngModel)]="searchQuery" (input)="filterProducts()" />
+    </label>
+
+    <!-- Genre Dropdown -->
+    <div class="dropdown dropdown-hover">
+      <div tabindex="0" role="button" class="btn btn-outline">
+        Genre <svg class="ml-1 w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      </div>
+      <ul tabindex="0"
+        class="dropdown-content z-[1] menu p-2 shadow bg-white rounded-box max-h-64 overflow-y-auto w-64 sm:w-72">
+        <li *ngFor="let g of genreOptions">
+          <label class="flex items-center gap-2 cursor-pointer whitespace-nowrap">
+            <input type="checkbox" class="checkbox checkbox-sm" [checked]="selectedGenres.includes(g)"
+              (change)="onGenreFilterChange($event, g)" />
+            <span>{{ g }}</span>
+          </label>
+        </li>
+      </ul>
+    </div>
+
+
+    <!-- Condition Dropdown -->
+    <div class="dropdown dropdown-hover">
+      <div tabindex="0" role="button" class="btn btn-outline">
+        Condition <svg class="ml-1 w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      </div>
+      <ul tabindex="0"
+        class="dropdown-content z-[1] menu p-2 shadow bg-white rounded-box w-52 max-h-64 overflow-y-auto">
+        <li *ngFor="let c of conditionOptions">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" class="checkbox checkbox-sm" [value]="c" [checked]="selectedConditions.includes(c)"
+              (change)="onConditionFilterChange($event, c)" />
+            <span>{{ c }}</span>
+          </label>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+
+  <!-- Product Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 p-4">
+    <div *ngIf="paginatedPokemonList.length === 0 && searchQuery" class="text-center text-gray-500 mt-6">
+      No results found for "{{ searchQuery }}". Try searching by title, author, or description.
+
+    </div>
+    @for (item of paginatedPokemonList; track $index) {
+    <label for="my-drawer-4"
+      class="card bg-white shadow-lg rounded-xl overflow-hidden transition-all hover:-translate-y-2 hover:shadow-xl duration-300 cursor-pointer p-5 flex flex-col border border-gray-300 w-full ">
+      <div (click)="clickOnePokemon(item)" class="flex-grow flex flex-col">
+        <!-- รูปภาพ -->
+        <div class=" relative w-full bg-gray-100 rounded-lg flex justify-center items-center">
+          <img class="aspect-[4/3] object-contain max-h-full max-w-full"
+            [src]="'http://localhost:3000' + (item.imageUrls?.[0] || '/fallback.jpg')" alt="{{item.name}}" />
+        </div>
+
+        <!-- รายละเอียด -->
+        <div class="text-center py-2 px-2 flex flex-col">
+          <h2 class="text-lg font-semibold text-gray-900 truncate">{{item.name}}</h2>
+          <p class="text-gray-600 text-xs line-clamp-3 min-h-8">{{item.des}}</p>
+        </div>
+
+        <!-- ราคาชิดซ้ายล่าง -->
+        <div class="mt-auto flex flex-col items-start">
+          <p class="text-xs text-gray-500">Seller: {{ item.user?.username || 'unknown'}}</p>
+          <p class="text-md font-bold text-green-600">{{item.price | number: '1.0-0'}} ฿</p>
+        </div>
+        <span class="flex items-center gap-1 text-xs font-semibold" [ngClass]="{
+        'text-green-600': item.quantity > 0,
+        'text-red-600': item.quantity === 0
+      }">
+          <svg *ngIf="item.quantity > 0" fill="#22c55e" width="12px" height="12px" viewBox="0 0 335.765 335.765"
+            xmlns="http://www.w3.org/2000/svg">
+            <polygon points="311.757,41.803 107.573,245.96 23.986,162.364 0,186.393 107.573,293.962 335.765,65.795">
+            </polygon>
+          </svg>
+          <svg *ngIf="item.quantity === 0" fill="#dc2626" width="12px" height="12px" viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.707 17.293a1 1 0 01-1.414 1.414L12 13.414l-4.293 4.293a1 1 0 01-1.414-1.414L10.586 12 6.293 7.707a1 1 0 011.414-1.414L12 10.586l4.293-4.293a1 1 0 011.414 1.414L13.414 12l4.293 4.293z" />
+          </svg>
+          {{ item.quantity > 0 ? 'available' : 'sold out' }}
+        </span>
+      </div>
+    </label>
+    }
+  </div>
+
+  <!-- Pagination -->
+  <div class="flex justify-center mt-8">
+    <button class="btn btn-sm btn-outline mx-2 text-gray-500 disabled:opacity-50" (click)="previousPage()"
+      [disabled]="currentPage === 1">Previous</button>
+    <span class="text-sm font-medium px-4 text-gray-700">Page {{currentPage}} of {{totalPages}}</span>
+    <button class="btn btn-sm btn-outline mx-2 text-gray-500 disabled:opacity-50" (click)="nextPage()"
+      [disabled]="currentPage === totalPages">Next</button>
+  </div>
+</section>
+
+<!-- Drawer -->
+<div class="drawer drawer-end z-50 anuphan-regular">
+  <input id="my-drawer-4" type="checkbox" class="drawer-toggle" />
+  <div class="drawer-side">
+    <label for="my-drawer-4" class="drawer-overlay"></label>
+    <div
+      class="menu bg-black/60 backdrop-blur-md text-white min-h-full w-full sm:w-[90vw] md:w-[80vw] lg:w-[65vw] p-6 rounded-l-3xl shadow-2xl transition-transform">
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-bold tracking-wide">{{ onePokemon?.name }}</h3>
+        <label for="my-drawer-4" class="btn btn-circle btn-ghost text-gray-300 hover:bg-gray-700">✕</label>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+        <!-- Gallery Section -->
+        <!-- รูปใหญ่ -->
+        <div class="w-full flex flex-col items-center mb-4">
+          <img [src]="selectedImage || ('http://localhost:3000' + onePokemon?.imageUrls?.[0])"
+            class="w-auto h-[300px] md:h-[380px] rounded-xl shadow-lg object-contain transition-all duration-300"
+            alt="Main Image" />
+          <!-- แกลเลอรี่เล็ก ๆ ใต้รูป -->
+          <div
+            class="w-full max-w-md overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent mx-auto">
+            <div class="flex gap-3 px-2 py-2 w-max">
+              <div *ngFor="let img of onePokemon?.imageUrls"
+                class="w-20 h-20 shrink-0 rounded-lg overflow-hidden border-2 cursor-pointer transition-all duration-200 hover:scale-105"
+                [ngClass]="{
+            'border-blue-500': selectedImage === 'http://localhost:3000' + img,
+            'border-gray-300': selectedImage !== 'http://localhost:3000' + img
+          }" (click)="selectedImage = 'http://localhost:3000' + img">
+                <img [src]="'http://localhost:3000' + img" class="object-cover w-full h-full" alt="Thumbnail" />
+              </div>
+            </div>
+            <div class="mt-6">
+              <h3 class="text-lg font-semibold text-white mb-2">Reviews</h3>
+            
+              <div *ngIf="reviews.length === 0" class="text-sm text-gray-400 italic">No reviews yet.</div>
+            
+              <div *ngFor="let review of reviews" class="mb-3 p-3 bg-white/10 rounded-lg border border-gray-700">
+                <div class="flex justify-between items-center mb-1">
+                  <span class="text-white font-semibold">{{ review.user?.username }}</span>
+                  <div class="rating rating-sm">
+                    <input *ngFor="let star of [1,2,3,4,5]"
+                           type="radio"
+                           class="mask mask-star-2"
+                           [ngClass]="{
+                             'bg-yellow-400': star <= review.rating,
+                             'bg-gray-300': star > review.rating
+                           }"
+                           disabled />
+                  </div>
+                </div>
+                <p class="text-gray-300 text-sm">{{ review.comment }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ///////////////////////// -->
+        <!-- Right: Info -->
+        <div class="flex flex-col gap-3">
+          <p class="text-sm text-gray-300"><span class="font-semibold text-white">Description:</span> {{ onePokemon?.des
+            }}</p>
+          <p class="text-sm text-gray-300"><span class="font-semibold text-white">Author:</span> {{ onePokemon?.author
+            }}</p>
+          <p class="text-sm text-gray-300"><span class="font-semibold text-white">Pages:</span> {{ onePokemon?.pages }}
+          </p>
+          <p class="text-sm text-gray-300"><span class="font-semibold text-white">Genre:</span> {{ onePokemon?.genre }}
+          </p>
+          <p class="text-sm text-gray-300"><span class="font-semibold text-white">Publisher:</span> {{
+            onePokemon?.publisher }}</p>
+          <p class="text-sm text-gray-300"><span class="font-semibold text-white">Published Year:</span> {{
+            onePokemon?.publicationYear }}</p>
+          <p class="text-sm text-gray-300">
+            <span class="font-semibold text-white">Condition:</span> {{ onePokemon?.condition }}
+          </p>
+
+          <p class="text-lg font-bold text-green-400 mt-2">Price: {{ onePokemon?.price | number:'1.0-0' }} ฿</p>
+          <p class="text-sm font-semibold text-red-400">Remaining: {{ onePokemon?.quantity }}</p>
+
+          <!-- Seller Info -->
+          <div class="bg-gray-800/30 p-4 rounded-xl mt-4 border border-gray-600">
+            <div class="flex items-center gap-4">
+              <!-- Avatar -->
+              <img
+                [src]="onePokemon?.user?.profileUrl ? 'http://localhost:3000/' + onePokemon?.user?.profileUrl : '/assets/default.jpg'"
+                alt="Seller Avatar" class="w-10 h-10 rounded-full object-cover border border-white shadow" />
+
+              <!-- Name + Button -->
+              <div class="flex flex-col">
+                <p class="text-sm text-gray-300 font-medium">
+                  Seller: <span class="text-white">{{ onePokemon?.user?.username || 'Unknown' }}</span>
+                </p>
+
+                <!-- Chat Button -->
+                <div *ngIf="onePokemon?.user?.id !== _user.getCurrentUser()?.id" class="mt-1">
+                  <a [routerLink]="['/chat', onePokemon?.user?.id]"
+                    class="btn btn-sm bg-white text-gray-900 hover:bg-gray-200 transition px-3">
+                    <svg class="fill-current" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24"
+                      viewBox="0 0 50 50">
+                      <path
+                        d="M 14 4 C 8.4886661 4 4 8.4886661 4 14 L 4 36 C 4 41.511334 8.4886661 46 14 46 L 36 46 C 41.511334 46 46 41.511334 46 36 L 46 14 C 46 8.4886661 41.511334 4 36 4 L 14 4 z M 14 6 L 36 6 C 40.430666 6 44 9.5693339 44 14 L 44 36 C 44 40.430666 40.430666 44 36 44 L 14 44 C 9.5693339 44 6 40.430666 6 36 L 6 14 C 6 9.5693339 9.5693339 6 14 6 z M 25 11 C 16.806196 11 10 16.724334 10 23.962891 C 10 28.422653 12.681228 32.244798 16.572266 34.560547 C 15.979588 35.500836 15.233739 36.474116 14.300781 37.384766 A 1.0001 1.0001 0 0 0 15.173828 39.083984 C 17.481979 38.674506 19.894769 37.826205 21.878906 36.597656 C 22.885987 36.785688 23.918133 36.925781 25 36.925781 C 33.193804 36.925781 40 31.201447 40 23.962891 C 40 16.724334 33.19389 11 25 11 z M 25 13 C 32.27011 13 38 17.989447 38 23.962891 C 38 29.936334 32.270196 34.925781 25 34.925781 C 23.93592 34.925781 22.905081 34.805366 21.904297 34.597656 A 1.0001 1.0001 0 0 0 21.148438 34.744141 C 20.222493 35.357332 19.095857 35.862111 17.912109 36.279297 C 18.279348 35.7823 18.664906 35.29371 18.921875 34.736328 A 1.0001 1.0001 0 0 0 18.457031 33.421875 C 14.551886 31.494479 12 27.967608 12 23.962891 C 12 17.989447 17.729804 13 25 13 z">
+                      </path>
+                    </svg>
+                    Chat with Seller
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quantity Control -->
+          <div class="flex items-center gap-4 mt-4 bg-gray-500/20 px-4 py-2 w-fit rounded-xl">
+            <button class="btn btn-circle btn-sm btn-outline text-xl text-gray-500 hover:bg-red-500 hover:text-white"
+              (click)="updateQuantityOnePokemon('decrease', onePokemon!)"
+              [disabled]="(onePokemon?.selectedQuantity || 1) <= 1">
+              -
+            </button>
+            <span class="text-xl font-bold text-white">{{ onePokemon?.selectedQuantity || 1 }}</span>
+            <button class="btn btn-circle btn-sm btn-outline text-xl text-gray-500 hover:bg-green-500 hover:text-white"
+              (click)="updateQuantityOnePokemon('increase', onePokemon!)"
+              [disabled]="(onePokemon?.selectedQuantity ?? 1) >= (onePokemon?.quantity ?? 0)">
+              +
+            </button>
+          </div>
+
+          <!-- Buttons -->
+          <ng-container *ngIf="onePokemon as book">
+            <div class="flex gap-3 mt-4">
+              <label for="my-drawer-4"
+                class="btn bg-gray-800 btn-sm text-white border-none hover:scale-105">Close</label>
+
+              <button *ngIf="book.quantity > 0" class="btn btn-primary btn-sm" (click)="handleAddToCartAnimation()">
+                Add To Cart
+              </button>
+            </div>
+          </ng-container>
+          
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+<app-footer></app-footer>
+
+<div id="cart-toast"
+  class="fixed bottom-5 right-5 bg-green-500 text-white text-sm px-4 py-3 rounded-lg shadow-lg opacity-0 transition-all duration-500">
+  Added {{onePokemon?.name}} to cart successfully!
+</div>
+
+<dialog id="image_modal" class="modal" (click)="closeImageModal($event)">
+  <div class="modal-box bg-black p-0 rounded-xl overflow-hidden" (click)="$event.stopPropagation()">
+    <img [src]="'http://localhost:3000' + selectedImage" class="w-full h-auto object-contain max-h-[80vh]" />
+  </div>
+</dialog>
+<dialog id="message_modal" class="modal" #messageModal>
+  <div class="modal-box">
+    <h3 class="font-bold text-lg">Send Message to Seller</h3>
+    <textarea [(ngModel)]="messageContent" class="textarea textarea-bordered w-full my-3"
+      placeholder="Type your message here..."></textarea>
+    <div class="modal-action">
+      <button class="btn" (click)="sendMessageToSeller()">Send</button>
+      <form method="dialog"><button class="btn btn-outline">Cancel</button></form>
+    </div>
+  </div>
+</dialog>

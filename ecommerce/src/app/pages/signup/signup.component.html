@@ -1,0 +1,128 @@
+<div class="w-full min-h-screen bg-[url('/assets/loginbook.jpg')] flex bg-cover bg-center items-center justify-center p-6">
+    <div
+        class="w-full max-w-lg sm:max-w-xs md:max-w-lg lg:max-w-3xl bg-white/30 backdrop-blur-lg border border-gray-300 shadow-xl rounded-2xl px-8 py-6">
+        <h2 class="text-center text-3xl font-bold text-white drop-shadow-md mb-6">Create an Account</h2>
+
+        <form [formGroup]="signUpForm" (ngSubmit)="onSubmitSignUp()" class="space-y-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <!-- Username -->
+                <div class="form-control">
+                    <label class="label text-white">Username</label>
+                    <input formControlName="username" class="input input-bordered w-full bg-gray-50/80 text-gray-700"
+                        type="text" placeholder="Enter username">
+                    <div *ngIf="signUpForm.get('username')?.invalid && signUpForm.get('username')?.touched"
+                        class="text-red-500 text-sm mt-1">Username is required.</div>
+                </div>
+
+                <!-- Email -->
+                <div class="form-control">
+                    <label class="label text-white">Email</label>
+                    <input formControlName="email" class="input input-bordered w-full bg-gray-50/80 text-gray-700"
+                        type="email" placeholder="Enter email">
+                    <div *ngIf="signUpForm.get('email')?.invalid && signUpForm.get('email')?.touched"
+                        class="text-red-500 text-sm mt-1">A valid email is required.</div>
+                </div>
+
+                <!-- Password -->
+                <div class="form-control relative">
+                    <label class="label text-white">Password</label>
+                    <input formControlName="password"
+                        class="input input-bordered w-full bg-gray-50/80 text-gray-700 pr-12"
+                        [type]="showPassword ? 'text' : 'password'" placeholder="Enter password">
+                    <!-- Show/Hide Password Button -->
+                    <button type="button"
+                        class="absolute right-3 top-[52px] text-gray-500 hover:text-gray-700 cursor-pointer"
+                        (click)="togglePasswordVisibility('password')">
+                        <svg *ngIf="!showPassword" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M15 12a3 3 0 11-6 0a3 3 0 0 0 4 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z" />
+                        </svg>
+                        <svg *ngIf="showPassword" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17.94 17.94a9.94 9.94 0 002.12-2.12m.88-3.82A10.005 10.005 0 0112 20c-3.314 0-6.314-1.348-8.506-3.526M9.88 9.88A3.001 3.001 0 0112 12m0 0a3.001 3.001 0 012.12-2.12M3.06 3.06l18.88 18.88" />
+                        </svg>
+                    </button>
+                    <div *ngIf="signUpForm.get('password')?.errors?.['required'] && signUpForm.get('password')?.touched"
+                        class="text-red-500 text-sm mt-1">Password is required.</div>
+                    <div *ngIf="signUpForm.get('password')?.errors?.['minlength'] && signUpForm.get('password')?.touched"
+                        class="text-red-500 text-sm mt-1">At least 8 characters.</div>
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="form-control">
+                    <label class="label text-white">Confirm Password</label>
+                    <input formControlName="confirmPassword"
+                        class="input input-bordered w-full bg-gray-50/80 text-gray-700" type="password"
+                        placeholder="Confirm password">
+                    <div *ngIf="signUpForm.errors?.['mismatch'] && (signUpForm.get('confirmPassword')?.touched || signUpForm.get('password')?.touched)"
+                        class="text-red-500 text-sm mt-1">Passwords do not match.</div>
+                </div>
+
+                <!-- First Name -->
+                <div class="form-control">
+                    <label class="label text-white">First Name</label>
+                    <input formControlName="firstname" class="input input-bordered w-full bg-gray-50/80 text-gray-700"
+                        type="text" placeholder="Enter first name">
+                    <div *ngIf="signUpForm.get('firstname')?.invalid && signUpForm.get('firstname')?.touched"
+                        class="text-red-500 text-sm mt-1">First Name is required.</div>
+                </div>
+
+                <!-- Last Name -->
+                <div class="form-control">
+                    <label class="label text-white">Last Name</label>
+                    <input formControlName="lastname" class="input input-bordered w-full bg-gray-50/80 text-gray-700"
+                        type="text" placeholder="Enter last name">
+                    <div *ngIf="signUpForm.get('lastname')?.invalid && signUpForm.get('lastname')?.touched"
+                        class="text-red-500 text-sm mt-1">Last Name is required.</div>
+                </div>
+
+                <!-- Birth Date -->
+                <div class="form-control">
+                    <label class="label text-white">Birth Date</label>
+                    <input formControlName="birth_date" class="input input-bordered w-full bg-gray-50/80 text-gray-700"
+                        type="date">
+                </div>
+                <div class="form-control">
+                    <label class="label text-white">Phone number</label>
+                    <input formControlName="phone_number" class="input input-bordered w-full bg-gray-50/80 text-gray-700"
+                        type="text" placeholder="Enter phone number">
+                    <div *ngIf="signUpForm.get('phone_number')?.invalid && signUpForm.get('phone_number')?.touched"
+                        class="text-red-500 text-sm mt-1">phone number is required.</div>
+                </div>
+            </div>
+            <div class="form-control mt-4">
+                <label class="cursor-pointer flex items-center gap-2">
+                    <input type="checkbox" class="checkbox checkbox-sm checkbox-accent mt-1"
+                    formControlName="consent" />
+                  <span class="label-text text-sm text-white">
+                    I consent to the collection and use of my personal data in accordance with the
+                    <a routerLink="/privacy-policy" class="underline text-blue-300 hover:text-blue-400">Privacy Policy</a>.
+                  </span>
+                </label>
+                <div *ngIf="signUpForm.get('consent')?.invalid && signUpForm.get('consent')?.touched"
+                     class="text-red-400 text-xs mt-1">
+                  You must agree before creating an account.
+                </div>
+              </div>
+
+            <!-- Buttons -->
+            <div class="flex justify-between items-center mt-6">
+                <button type="submit" class="btn btn-primary w-full hover:shadow-xl transition-all"
+                    [disabled]="signUpForm.invalid">
+                    Create Account
+                </button>
+            </div>
+
+            <div class="text-center mt-4">
+                <p class="text-white">Already have an account?
+                    <a routerLink="/log-in" class="text-blue-300 hover:underline">Login</a>
+                </p>
+            </div>
+        </form>
+    </div>
+</div>
+<app-footer></app-footer>

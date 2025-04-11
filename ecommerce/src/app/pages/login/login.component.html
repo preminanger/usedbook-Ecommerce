@@ -1,0 +1,98 @@
+<div class="w-full h-screen bg-[url('/assets/loginbook.jpg')] bg-cover bg-center flex items-center justify-center p-4">
+    <div class="w-full max-w-md bg-white/30 backdrop-blur-lg shadow-xl border border-gray-300 rounded-2xl p-8">
+
+        <h2 class="text-white text-center text-3xl font-bold drop-shadow-md mb-6">Login</h2>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+
+            <!-- Username Field -->
+            <div>
+                <label class="text-white text-sm font-semibold">Username</label>
+                <div class="relative">
+                    <input formControlName="username"
+                        class="input input-bordered w-full pl-10 bg-white/70 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500"
+                        type="text" placeholder="Enter username" [ngClass]="{
+                          'border-red-500': loginForm.get('username')?.invalid && loginForm.get('username')?.touched,
+                          'border-gray-300': !loginForm.get('username')?.invalid || !loginForm.get('username')?.touched
+                        }">
+                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5.121 17.804A4 4 0 116.83 4.596m1.415 0A4.002 4.002 0 0116.97 6.91m-4.735 5.171A4.002 4.002 0 1117.242 8.24M9 15h.01M15 15h.01M12 12h.01M12 18h.01" />
+                    </svg>
+                </div>
+                <div *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
+                    class="text-red-500 text-sm mt-1">
+                    Username is required.
+                </div>
+            </div>
+
+            <!-- Password Field -->
+            <div>
+                <label class="text-white text-sm font-semibold">Password</label>
+                <div class="relative">
+                    <input formControlName="password"
+                        class="input input-bordered w-full pl-10 pr-10 bg-white/70 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500"
+                        [type]="showPassword ? 'text' : 'password'" placeholder="Enter password" [ngClass]="{
+                          'border-red-500': loginForm.get('password')?.invalid && loginForm.get('password')?.touched,
+                          'border-gray-300': !loginForm.get('password')?.invalid || !loginForm.get('password')?.touched
+                        }">
+                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 15v-3m0 0v-3m0 3h3m-3 0H9m12 6V9a6 6 0 00-6-6H9a6 6 0 00-6 6v6a6 6 0 006 6h6a6 6 0 006-6z" />
+                    </svg>
+                    <!-- Toggle Password Visibility -->
+                    <button type="button"
+                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                        (click)="showPassword = !showPassword">
+                        <svg *ngIf="!showPassword" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z" />
+                        </svg> <svg *ngIf="showPassword" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17.94 17.94a9.94 9.94 0 002.12-2.12m.88-3.82A10.005 10.005 0 0112 20c-3.314 0-6.314-1.348-8.506-3.526M9.88 9.88A3.001 3.001 0 0112 12m0 0a3.001 3.001 0 012.12-2.12M3.06 3.06l18.88 18.88" />
+                        </svg>
+                    </button>
+                </div>
+                <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+                    class="text-red-500 text-sm mt-1">
+                    Password is required.
+                </div>
+            </div>
+
+            <!-- Error alert -->
+            <div *ngIf="loginError" class="alert alert-error shadow-lg text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-5 w-5" fill="none"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M18.364 5.636l-1.414 1.414M6.343 17.657l-1.415 1.415M2 12h2m16 0h2m-2-4a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>{{ loginError }}</span>
+            </div>
+            <!-- Buttons -->
+            <div class="flex justify-between items-center mt-6">
+
+                <button type="submit" class="btn btn-primary w-full bg-blue-500 hover:bg-blue-600 text-white shadow-md"
+                    [disabled]="loginForm.invalid || isLoading">
+                    <span *ngIf="isLoading">Logging in...</span>
+
+                    <span *ngIf="!isLoading">Login</span>
+                </button>
+            </div>
+
+            <div class="text-center">
+                <p class="text-white">Don't have an account?
+                    <a routerLink="/sign-up" class="text-blue-300 hover:text-blue-500 transition duration-200">Sign
+                        Up</a>
+                </p>
+            </div>
+
+        </form>
+    </div>
+</div>
+<app-footer></app-footer>

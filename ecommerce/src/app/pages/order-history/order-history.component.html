@@ -1,0 +1,391 @@
+<app-navbar></app-navbar>
+<section class="w-full min-h-screen bg-white anuphan-regular flex">
+  <aside class="min-w-64 bg-white border-r border-gray-200 shadow-sm p-6 hidden md:block">
+    <h2 class="text-md font-semibold mb-6 text-gray-700 border-b border-black">My Account</h2>
+    <ul class="space-y-4">
+      <li>
+        <a routerLink="/profile" routerLinkActive="bg-gray-100 text-black font-semibold rounded-lg px-3 py-2"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="flex items-center gap-1 text-gray-600 hover:text-black transition-all px-3 py-2 rounded-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M5.121 17.804A4 4 0 018 16h8a4 4 0 012.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg> Profile Information</a>
+      </li>
+      <li>
+        <a class="flex items-center gap-1" routerLink="/bank-account"
+          routerLinkActive="bg-gray-100 text-black font-semibold rounded-lg px-3 py-2"
+          [routerLinkActiveOptions]="{ exact: true }"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
+            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 10h18M5 6h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z" />
+          </svg>
+          Bank Account</a>
+      </li>
+      <li>
+        <a class="flex items-center gap-1" routerLink="/order-history"
+          routerLinkActive="bg-gray-100 text-black font-semibold rounded-lg px-3 py-2"
+          [routerLinkActiveOptions]="{ exact: true }"><svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" x="0px"
+            y="0px" viewBox="0 0 24 24">
+            <path
+              d="M 5.75 3 A 1.0001 1.0001 0 0 0 4.8867188 3.4960938 L 3.1367188 6.4960938 A 1.0001 1.0001 0 0 0 3 7 L 3 19 C 3 20.093063 3.9069372 21 5 21 L 19 21 C 20.093063 21 21 20.093063 21 19 L 21 7 A 1.0001 1.0001 0 0 0 20.863281 6.4960938 L 19.113281 3.4960938 A 1.0001 1.0001 0 0 0 18.25 3 L 5.75 3 z M 6.3242188 5 L 17.675781 5 L 18.841797 7 L 5.1582031 7 L 6.3242188 5 z M 5 9 L 19 9 L 19 19 L 5 19 L 5 9 z M 9 11 L 9 13 L 15 13 L 15 11 L 9 11 z">
+            </path>
+          </svg>
+          Order History</a>
+      </li>
+    </ul>
+  </aside>
+  <div class="container mx-auto p-6">
+    <!-- Empty State -->
+    <div *ngIf="orders.length === 0" class="text-center py-20">
+      <h3 class="text-xl font-semibold text-gray-700">You haven't placed any orders yet.</h3>
+      <p class="text-gray-500">Start shopping and your orders will show up here </p>
+    </div>
+
+    <!-- Order Cards -->
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-2 relation" *ngIf="orders.length > 0">
+      <div *ngFor="let order of orders; let i = index"
+        class="bg-white rounded-xl shadow-md p-5 border border-gray-100 ">
+
+        <div
+          class="border p-5 rounded-xl shadow-md hover:transition-all hover:-translate-y-2 hover:shadow-xl duration-300 cursor-pointer"
+          (click)="openOrderDetailModal(order)">
+
+          <div class="flex justify-between text-xs font-medium mb-2">
+            <span [ngClass]="{
+            'text-emerald-700': isStatusAtLeast(order.status, 'preparing'),
+            'text-gray-400': !isStatusAtLeast(order.status, 'preparing')
+          }">Preparing</span>
+
+            <span [ngClass]="{
+            'text-emerald-700': isStatusAtLeast(order.status, 'shipped'),
+            'text-gray-400': !isStatusAtLeast(order.status, 'shipped')
+          }">Shipped</span>
+
+            <span [ngClass]="{
+            'text-emerald-700': isStatusAtLeast(order.status, 'delivered'),
+            'text-gray-400': !isStatusAtLeast(order.status, 'delivered')
+          }">Delivered</span>
+            <!-- Progress Bar -->
+          </div>
+          <div class="relative w-full h-1.5 rounded bg-gray-200 overflow-hidden mb-4 ">
+            <div class="absolute left-0 top-0 h-full bg-emerald-700 transition-all duration-500 "
+              [ngStyle]="{ width: getProgressWidth(order.status) }">
+            </div>
+          </div>
+
+          <p class="text-sm text-gray-500 my-2">Order Date: {{ order.created_at | date:'mediumDate' }}</p>
+          <p class="text-sm text-gray-500 my-2 ">
+            Status:
+            <span [ngSwitch]="order.status" class="badge text-xs py-1 px-2 rounded-md capitalize" [ngClass]="{
+      'bg-gray-300 text-gray-800': order.status === 'cancelled',
+      'bg-sky-200 text-sky-800': order.status === 'slip_uploaded',
+      'bg-emerald-300 text-emerald-800': order.status === 'paid',
+      'bg-amber-300 text-amber-800': order.status === 'waiting_payment',
+      'bg-purple-200 text-purple-800': order.status === 'preparing',
+      'bg-blue-200 text-blue-800': order.status === 'shipped',
+      'bg-green-200 text-green-800': order.status === 'delivered'
+    }">
+
+              <ng-container [ngSwitch]="order.status">
+                <span *ngSwitchCase="'cancelled'">Cancelled</span>
+                <span *ngSwitchCase="'slip_uploaded'">Waiting Seller to verify</span>
+                <span *ngSwitchCase="'paid'">Paid</span>
+                <span *ngSwitchCase="'waiting_payment'">Waiting for Payment</span>
+                <span *ngSwitchCase="'preparing'"><svg xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 mr-1 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 17H6a2 2 0 01-2-2V7a2 2 0 012-2h9a2 2 0 012 2v2h2.586A2 2 0 0121 10.414l.586.586A2 2 0 0122 13v2a2 2 0 01-2 2h-1M7 17a2 2 0 104 0m6 0a2 2 0 104 0" />
+                  </svg>
+                  Preparing Shipment</span>
+                <span *ngSwitchCase="'shipped'"><svg xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 mr-1 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 17H6a2 2 0 01-2-2V7a2 2 0 012-2h9a2 2 0 012 2v2h2.586A2 2 0 0121 10.414l.586.586A2 2 0 0122 13v2a2 2 0 01-2 2h-1M7 17a2 2 0 104 0m6 0a2 2 0 104 0" />
+                  </svg>
+                  Shipped</span>
+                <span *ngSwitchCase="'delivered'"><svg xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 mr-1 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 17H6a2 2 0 01-2-2V7a2 2 0 012-2h9a2 2 0 012 2v2h2.586A2 2 0 0121 10.414l.586.586A2 2 0 0122 13v2a2 2 0 01-2 2h-1M7 17a2 2 0 104 0m6 0a2 2 0 104 0" />
+                  </svg>
+                  Delivered</span>
+                <span *ngSwitchDefault>Unknown</span>
+              </ng-container>
+            </span>
+          </p>
+
+          <p *ngIf="order.shippingMethod" class="text-xs text-gray-400 mb-2">
+            ETA: {{ getEstimatedArrival(order.shippingMethod) }}
+          </p>
+          <div *ngIf="order.orderItems && order.orderItems.length > 0" class="flex justify-between pt-2">
+            <img *ngIf="getFirstImage(order)" [src]="getFirstImage(order)"
+              class="w-12 h-12 rounded object-cover border" />
+            <div class="flex flex-col text-sm text-gray-70">
+              <p>Price: {{ order.price }} ฿</p>
+              <p>Shipping: {{ order.shippingFee }} ฿</p>
+            </div>
+          </div>
+          <div class="text-sm text-gray-700 mt-1">
+            products: {{ order.orderItems[0].pokemon.name }}
+            <span *ngIf="order.orderItems.length > 1" class="text-gray-400">
+              +{{ order.orderItems.length - 1 }} more
+            </span>
+          </div>
+          <!-- Price -->
+          <div class="text-sm text-gray-700 pt-2">
+            <p class="text-emerald-500 mt-3 text-lg font-bold">Total: ฿ {{ (+order.price + +(order.shippingFee ??
+              0)) | number:'1.2-2' }}</p>
+          </div>
+        </div>
+        <div class="w-full pt-4 self-end">
+          <button *ngIf="order.status === 'waiting_payment' || order.status === 'pending'"
+            class="btn btn-error btn-sm rounded-lg" (click)="cancelOrder(order.id)">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<dialog id="order_detail_modal" #orderModal (click)="onBackdropClick($event)" class="modal anuphan-regular">
+  <div class="modal-box max-w-2xl " (click)="$event.stopPropagation()">
+    <h3 class="font-bold text-xl mb-4"> Order #{{ selectedOrder?.order_code }}</h3>
+    <!-- Seller Info (ใน Modal) -->
+    <div *ngIf="selectedOrder?.orderItems?.[0]?.pokemon?.user as seller"
+      class="bg-gray-100 border border-gray-200 p-4 rounded-xl mb-4 space-y-2">
+
+      <div class="flex items-center gap-3 relative">
+        <img [src]="seller.profileUrl ? 'http://localhost:3000/' + seller.profileUrl : '/assets/default.jpg'"
+          class="w-10 h-10 rounded-full object-cover border" />
+
+        <div>
+          <p class="text-sm text-gray-700 font-medium">
+            Seller: <span class="text-gray-900">{{ seller.username || 'Unknown' }}</span>
+          </p>
+
+          <p class="text-xs text-gray-500 italic">Contact the seller via chat only for privacy</p>
+
+          <button (click)="handleChat(seller.id)" class="btn btn-outline btn-sm mt-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M7 8h6m-6 4h10m-3 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2h-3z" />
+            </svg>
+            Chat with Seller
+          </button>
+        </div>
+        <button class="absolute right-0 top-0 btn btn-sm btn-outline btn-error mt-2 text-xs" (click)="openReportModal(seller.id)">
+           Report
+        </button>
+      </div>
+    </div>
+
+    <p class="text-sm font-semibold text-gray-600 mb-2">
+      Status:
+      <span class="text-xs font-medium px-2 py-1 rounded-md inline-flex items-center gap-1" [ngClass]="{
+        'bg-yellow-100 text-yellow-800': selectedOrder?.status === 'waiting_payment',
+        'bg-blue-100 text-blue-800': selectedOrder?.status === 'slip_uploaded',
+        'bg-green-100 text-green-800': selectedOrder?.status === 'paid',
+        'bg-purple-100 text-purple-800': selectedOrder?.status === 'preparing',
+        'bg-sky-100 text-sky-800': selectedOrder?.status === 'shipped',
+        'bg-emerald-100 text-emerald-800': selectedOrder?.status === 'delivered',
+        'bg-gray-200 text-gray-600': selectedOrder?.status === 'cancelled'
+      }">
+
+        <svg *ngIf="['preparing', 'shipped', 'delivered'].includes(selectedOrder?.status || '')"
+          xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 inline-block" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 17H6a2 2 0 01-2-2V7a2 2 0 012-2h9a2 2 0 012 2v2h2.586A2 2 0 0121 10.414l.586.586A2 2 0 0122 13v2a2 2 0 01-2 2h-1M7 17a2 2 0 104 0m6 0a2 2 0 104 0" />
+        </svg>
+        {{ selectedOrder?.status | titlecase }}
+      </span>
+    </p>
+    <!-- ป้องกัน error โดยตรวจสอบให้แน่ใจก่อน -->
+    <div *ngIf="selectedOrder?.trackingNumber && selectedOrder?.shippingProvider">
+      <p class="text-sm text-gray-700">
+        <span class="font-medium">Tracking:</span>
+        <a [href]="getTrackingUrl(selectedOrder!.shippingProvider!, selectedOrder!.trackingNumber!)"
+          class="text-blue-600 underline" target="_blank">
+          {{ selectedOrder!.trackingNumber }} ({{ getProviderName(selectedOrder!.shippingProvider!) }})
+        </a>
+      </p>
+    </div>
+
+    <!-- Shipping Address Block -->
+    <div class="bg-gray-50 border border-gray-200 p-4 rounded-lg mt-4 text-sm text-gray-700">
+      <p class="font-medium text-gray-800 mb-2 flex items-center"><svg xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 text-gray-600 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 11c1.104 0 2-.896 2-2s-.896-2-2-2-2 .896-2 2 .896 2 2 2zM12 22s8-4.5 8-10c0-4.418-3.582-8-8-8S4 7.582 4 12c0 5.5 8 10 8 10z" />
+        </svg>
+        Shipping Address</p>
+      <p><span class="font-medium">Type:</span> {{ selectedOrder?.shippingAddress?.addressType | titlecase }}</p>
+      <p>
+        {{ selectedOrder?.shippingAddress?.houseNumber }},
+        {{ selectedOrder?.shippingAddress?.building }},
+        {{ selectedOrder?.shippingAddress?.street }}
+      </p>
+      <p>
+        {{ selectedOrder?.shippingAddress?.subDistrict }},
+        {{ selectedOrder?.shippingAddress?.district }},
+        {{ selectedOrder?.shippingAddress?.province }} {{ selectedOrder?.shippingAddress?.postalCode }}
+      </p>
+      <p>{{ selectedOrder?.shippingAddress?.country }}</p>
+    </div>
+
+
+
+    <p class="text-sm text-gray-500 mb-2">Date: {{ selectedOrder?.created_at | date:'medium' }}</p>
+
+    <!-- รายการสินค้า -->
+    <div class="divide-y divide-gray-200 max-h-[300px] overflow-y-auto mb-4">
+      <div *ngFor="let item of selectedOrder?.orderItems" class="flex-col flex">
+        <div class="flex flex-col gap-4 border-b border-gray-100 py-4 last:border-none">
+          <div class="flex justify-between gap-3">
+            <img [src]="'http://localhost:3000' + item.pokemon.imageUrlsParsed?.[0]"
+              class="w-16 h-16 object-cover rounded border" />
+            <div class="flex-1">
+              <div class="font-semibold">{{ item.pokemon.name }}</div>
+              <div class="text-sm text-gray-500">{{ item.quantity }} × ฿{{ item.price }}</div>
+            </div>
+            <div class="font-semibold text-green-600 min-w-[60px] text-right">
+              ฿{{ item.quantity * item.price }}
+            </div>
+          </div>
+          <div  *ngIf="selectedOrder?.status === 'delivered' && !hasUserReviewed(item.pokemon.id)">
+            <label class="label">Write a review:</label>
+            <textarea class="textarea textarea-bordered w-full" rows="3" [(ngModel)]="reviewComment"
+              placeholder="Share your thoughts about the product..."></textarea>
+          </div>
+          <!-- Rating -->
+          <div class="">
+            <div  *ngIf="selectedOrder?.status === 'delivered' && !hasUserReviewed(item.pokemon.id)" class="flex items-center gap-2">
+              <div class="rating rating-sm mt-2">
+                <input type="radio" name="rating" class="mask mask-star-2 bg-yellow-400" [(ngModel)]="reviewRating"
+                  [value]="1" />
+                <input type="radio" name="rating" class="mask mask-star-2 bg-yellow-400" [(ngModel)]="reviewRating"
+                  [value]="2" />
+                <input type="radio" name="rating" class="mask mask-star-2 bg-yellow-400" [(ngModel)]="reviewRating"
+                  [value]="3" />
+                <input type="radio" name="rating" class="mask mask-star-2 bg-yellow-400" [(ngModel)]="reviewRating"
+                  [value]="4" />
+                <input type="radio" name="rating" class="mask mask-star-2 bg-yellow-400" [(ngModel)]="reviewRating"
+                  [value]="5" />
+              </div>
+              <!-- Submit button -->
+              <button  class="btn btn-primary mt-2 btn-sm " (click)="submitReview(item.pokemon.id)">Submit
+                Review</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="selectedOrder">
+      <div class="flex justify-between text-sm text-gray-700 mt-4">
+        <span>Product Total:</span>
+        <span>฿ {{ selectedOrder.price | number:'1.2-2' }}</span>
+      </div>
+
+      <div class="flex justify-between text-sm text-gray-700">
+        <span>Shipping Fee:</span>
+        <span>฿ {{ selectedOrder.shippingFee ?? 0 }}</span>
+      </div>
+
+      <div class="flex justify-between text-lg font-bold text-emerald-500 border-t pt-2 mt-2">
+        <span>Total:</span>
+        <span>฿ {{ getTotalPrice(selectedOrder) | number: '1.2-2' }}</span>
+      </div>
+    </div>
+
+    <div class="modal-action mt-6 flex justify-end gap-3">
+      <button
+        class="px-4 py-2 rounded-lg text-sm text-gray-700 bg-white border border-gray-300 hover:bg-gray-100 transition"
+        onclick="order_detail_modal.close()"> Close </button>
+      <button *ngIf="selectedOrder?.status === 'waiting_payment'"
+        class="bg-[#7b5e57] hover:bg-[#6b4a48] text-white text-sm px-4 py-1.5 rounded-lg shadow-sm"
+        (click)="openPaymentModal(selectedOrder!)">
+        Notify Payment
+      </button>
+
+    </div>
+  </div>
+
+
+</dialog>
+<dialog #paymentModal class="modal anuphan-regular">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg mb-4"> Payment Notification</h3>
+
+    <!-- Seller Bank Info -->
+    <div *ngIf="selectedOrder?.orderItems?.[0]?.pokemon?.user as seller"
+      class="bg-gray-100 p-4 rounded-xl shadow-sm mb-4">
+      <h4 class="font-semibold text-gray-700 mb-2">Seller's Bank Info</h4>
+      <p class="text-sm text-gray-600">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block mr-1" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M3 10h18M4 10v10h16V10M12 2l8 6H4l8-6z" />
+        </svg>
+        Bank: <span class="font-medium">{{ seller.bank_name }}</span>
+      </p>
+      <p class="text-sm text-gray-600">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block mr-1" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M5.121 17.804A9 9 0 0112 15a9 9 0 016.879 2.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        Account Name: <span class="font-medium">{{ seller.account_name }}</span>
+      </p>
+      <p class="text-sm text-gray-600">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block mr-1" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M7 10h10M7 14h10M9 3L7 21M17 3l-2 18" />
+        </svg>
+        Account Number: <span class="font-medium tracking-wide">{{ seller.account_number }}</span>
+      </p>
+      <div class="divider text-gray-600">or</div>
+      <div *ngIf="seller.qr_image_url" class="mt-4 text-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block mr-1" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M4 4h6v6H4V4zM14 4h6v6h-6V4zM4 14h6v6H4v-6zM14 14h2v2h-2v-2zM18 18h2v2h-2v-2z" />
+        </svg>
+        <img [src]="'http://localhost:3000' + seller.qr_image_url"
+          class="w-40 mx-auto rounded-lg border border-gray-300 shadow" alt="QR Code" />
+
+        <p class="text-xs text-gray-400 mt-1">Scan QR to Pay</p>
+      </div>
+    </div>
+
+
+    <p class="text-sm text-gray-500 mb-2">Please attach the transfer slip or payment proof:</p>
+
+    <input type="file" accept="image/*" (change)="onFileSelected($event)"
+      class="file-input file-input-bordered w-full mb-4" />
+
+    <img *ngIf="previewUrl" [src]="previewUrl" class="w-40 rounded-lg mx-auto mb-4" />
+    <button *ngIf="previewUrl" class="text-xs text-red-500 underline block mx-auto mb-2"
+      (click)="clearSelectedFile()">Remove selected file</button>
+    <div class="modal-action">
+      <form method="dialog">
+        <button class="btn btn-sm btn-outline">Cancel</button>
+      </form>
+      <button class="btn btn-sm btn-success" [disabled]="!selectedFile" (click)="submitPaymentProof()">Submit</button>
+    </div>
+  </div>
+</dialog>
+<dialog #reportModal class="modal">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg mb-4">Report User</h3>
+    <textarea [(ngModel)]="reportReason" class="textarea textarea-bordered w-full" placeholder="Enter reason here..."></textarea>
+    <div class="modal-action">
+      <button class="btn" (click)="submitReport()">Submit</button>
+      <form method="dialog">
+        <button class="btn btn-outline">Cancel</button>
+      </form>
+    </div>
+  </div>
+</dialog>

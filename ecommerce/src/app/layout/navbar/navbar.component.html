@@ -1,0 +1,50 @@
+<div class="navbar bg-base-100 shadow-sm border-b">
+    <div class="navbar-start" routerLink="/home"><a class="btn btn-ghost text-xl" *ngIf="!isAdmin">UsedBook</a></div>
+    <div class="navbar-center" >
+        
+    </div>
+    <div class="navbar-end flex">
+        <div class="flex gap-8">
+            <button class="flex items-center gap-2" *ngIf="isAdmin">
+                    <a routerLink="/admin-report" class="text-sm text-gray-700 hover:text-black font-medium">
+                       Admin Panel
+                    </a>
+                <li>
+                    <a class="text-sm text-gray-700 hover:text-black font-medium" routerLink="/log-in">Logout</a>
+                </li>
+              </button>
+            <button class="btn btn-ghost flex gap-2" routerLink="/cart" *ngIf="!isAdmin">
+                MyCart
+              </button>
+            <button class="btn btn-ghost flex" routerLink="/my-product" *ngIf="!isAdmin">
+                <a>MyProduct</a>
+            </button>
+            <div class="dropdown dropdown-end" *ngIf="!isAdmin">
+                <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar" >
+                    <div class="w-10 h-10 rounded-full overflow-hidden" >
+                        @if(imageUrl){
+                        <img [src]="imageUrl" alt="Profile Picture" class="w-full h-full object-cover rounded-full" />
+                        }@else {
+                        <div class="cursor-pointer bg-gray-100 rounded-full inline-flex justify-center items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                class="fill-gray-300 icon icon-tabler icons-tabler-filled icon-tabler-user w-full p-2">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M12 2a5 5 0 1 1 -5 5l.005 -.217a5 5 0 0 1 4.995 -4.783z" />
+                                <path
+                                    d="M14 14a5 5 0 0 1 5 5v1a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-1a5 5 0 0 1 5 -5h4z" />
+                            </svg>
+                        </div>
+                        }
+                    </div>
+                </div>
+                <ul tabindex="0"
+                    class="menu menu-sm dropdown-content bg-base-100 rounded-box z-10 mt-3 w-52 p-2 shadow">
+                    <li routerLink="/profile"><a>My Account</a></li>
+                    <li routerLink="/inbox"><a>Message</a></li>
+                    <li routerLink="/my-sales"><a>My Sales</a></li>
+                    <li routerLink="/log-in"><a>Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

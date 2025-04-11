@@ -1,0 +1,179 @@
+<app-navbar></app-navbar>
+<!-- Cart Section -->
+<section class="bg-[#fafafa] min-h-screen py-12 px-4 sm:px-6 lg:px-20 font-sans">
+    <div class="max-w-5xl mx-auto space-y-8">
+
+        <!-- Header -->
+        <figure class="diff aspect-16/9 mb-6" tabindex="0">
+            <div class="diff-item-1" role="img">
+                <div
+                    class="bg-zinc-100 text-700 grid place-content-center text-3xl sm:text-5xl font-black p-4 rounded-lg shadow-md">
+                    MY CART
+                </div>
+            </div>
+            <div class="diff-item-2" role="img" tabindex="0">
+                <div
+                    class="bg-gray-700 text-white grid place-content-center text-3xl sm:text-5xl font-black p-4 rounded-lg shadow-md">
+                    MY CART
+                </div>
+            </div>
+            <div class="diff-resizer"></div>
+        </figure>
+        <div *ngIf="cartItems.length === 0"
+            class="flex flex-col items-center justify-center text-center py-20 space-y-4">
+            <h2 class="text-2xl font-semibold text-gray-700">Your cart is feeling a little lonely :q</h2>
+            <p class="text-gray-500">Looks like you haven't added anything yet. Let's fix that!</p>
+            <a routerLink="/home" class="btn btn-neutral shadow-md hover:shadow-lg transition-all mt-4">Continue
+                Shopping</a>
+        </div>
+        <!-- Product Card -->
+        <div *ngFor="let item of cartItems"
+            class="bg-white rounded-2xl shadow-sm p-6 flex items-center justify-between hover:shadow-md transition-all">
+            <!-- Left: Image & Info -->
+            <div class="flex items-center gap-4">
+                <img [src]="'http://localhost:3000' + item.pokemon.imageUrls?.[0]" alt="Product"
+                    class="w-16 h-16 object-cover rounded-lg border border-gray-200" />
+                <div>
+                    <h2 class="text-lg font-medium text-gray-800">{{ item.pokemon.name }}</h2>
+                    <p class="text-sm text-gray-500 truncate w-48">{{ item.pokemon.des }}</p>
+                    <p class="text-sm text-gray-500 mt-1">฿ {{ item.pokemon.price | number:'1.0-0' }}</p>
+                </div>
+            </div>
+
+            <!-- Right: Quantity & Action -->
+            <div class="flex items-center gap-4">
+                <div class="flex flex-col items-center gap-1 relative">
+                    <!-- ปุ่มเพิ่ม/ลด -->
+                    <div class="flex items-center gap-3 bg-gray-100 rounded-full px-3 py-1 ">
+                        <!-- ปุ่มลด -->
+                        <button
+                            class="w-8 h-8 flex items-center justify-center text-white bg-gray-800 rounded-full hover:bg-red-500 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+                            (click)="changeQuantity('decrease', item)" [disabled]="item.quantity <= 1">
+                            −
+                        </button>
+
+                        <!-- จำนวน -->
+                        <span class="text-lg font-semibold text-gray-800 w-6 text-center">
+                            {{ item.quantity }}
+                        </span>
+
+                        <!-- ปุ่มเพิ่ม -->
+                        <button
+                            class="w-8 h-8 flex items-center justify-center text-white bg-gray-800 rounded-full hover:bg-green-500 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+                            (click)="changeQuantity('increase', item)"
+                            [disabled]="item.quantity >= item.pokemon.quantity">
+                            +
+                        </button>
+                    </div>
+                    <div *ngIf="item.quantity >= item.pokemon.quantity"
+                        class="absolute bottom-11 w-[110%] text-xs text-red-500 mt-1">
+                        Only {{ item.pokemon.quantity }} item{{ item.pokemon.quantity > 1 ? 's' : '' }} left in stock
+                    </div>
+                </div>
+                <div class="text-green-600 font-semibold text-lg whitespace-nowrap">
+                    ฿ {{ item.quantity * item.pokemon.price }}
+                </div>
+                <button class="text-red-500 hover:bg-red-50 px-3 py-1 rounded-lg text-sm border border-red-200"
+                    (click)="deleteQuantity(item.id)">
+                    Remove
+                </button>
+            </div>
+        </div>
+
+        <!-- Total Summary -->
+        <div class="bg-white rounded-2xl shadow-sm p-6 flex flex-col sm:flex-row justify-between items-center relative">
+            <div class="text-left mb-4 sm:mb-0">
+                <p class="text-gray-500 text-sm">Total Quantity: <span class="font-semibold text-gray-700">{{
+                        getTotalQuantity() }}</span></p>
+                <p class="text-2xl font-bold text-green-600 mt-1">Total: ฿ {{ getTotalPrice() | number:'1.0-0' }}</p>
+            </div>
+
+            <button class="btn btn-primary" [class.btn-disabled]="hasOverQuantityItems() || cartItems.length === 0"
+                [disabled]="hasOverQuantityItems() || cartItems.length === 0" (click)="openModal()">
+                Confirm Order
+            </button>
+
+            <div *ngIf="hasOverQuantityItems()" class="text-red-500 text-sm mt-2 absolute bottom-0 right-0">
+                You have items exceeding available stock!!!
+            </div>
+        </div>
+
+    </div>
+</section>
+<app-footer></app-footer>
+<dialog #checkoutModal id="checkout_modal" class="modal backdrop-blur-md bg-black/30">
+    <div class="modal-box max-w-2xl bg-white rounded-xl p-6 shadow-xl">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-1"><svg
+                xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 14h6m-6-4h6m-7 10h8a2 2 0 002-2V6a2 2 0 00-2-2H7a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Review Your Order </h2>
+        <div class="divide-y divide-gray-200 max-h-[300px] overflow-y-auto">
+            <div *ngFor="let item of cartItems" class="flex items-center justify-between py-3">
+                <div class="flex gap-3 items-center">
+                    <img [src]="'http://localhost:3000' + item.pokemon.imageUrls?.[0]"
+                        class="w-12 h-12 object-cover rounded-lg" />
+                    <div>
+                        <h4 class="font-medium text-gray-800">{{ item.pokemon.name }}</h4>
+                        <p class="text-xs text-gray-500">{{ item.quantity }} × {{ item.pokemon.price | number }} ฿</p>
+                    </div>
+                </div>
+                <div class="text-sm text-gray-700">{{ item.quantity * item.pokemon.price | number }} ฿</div>
+            </div>
+        </div>
+
+        
+        <!-- Address Section -->
+        <div class="mt-6">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Shipping Address</label>
+
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <ng-container *ngIf="userAddresses.length > 0; else noAddress">
+                    <select class="select select-sm select-bordered w-full font-medium text-sm text-gray-700"
+                        [(ngModel)]="selectedAddressId">
+                        <option *ngFor="let addr of userAddresses" [value]="addr.id">
+                            {{ addr.addressType }} : {{ formatAddress(addr) }}
+                        </option>
+                    </select>
+                </ng-container>
+
+                <ng-template #noAddress>
+                    <p class="text-sm text-red-500">
+                        You don't have a shipping address yet.
+                        <a routerLink="/profile" class="underline text-blue-600">Add one in Profile</a>
+                    </p>
+                </ng-template>
+            </div>
+            <!-- Shipping Method -->
+            <div class="mt-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Shipping Method</label>
+                <select class="select select-sm select-bordered w-full" [(ngModel)]="selectedShippingMethod">
+                    <option value="standard">Standard - ฿30</option>
+                    <option value="express">Express - ฿50</option>
+                    <option value="same_day">Same Day - ฿120</option>
+                </select>
+                <p class="text-sm text-gray-500 mt-2">
+                    Estimated Arrival: <span class="font-medium text-gray-700">
+                      {{ getEstimatedArrival(selectedShippingMethod) }}
+                    </span>
+                  </p>
+            </div>
+        </div>
+        <div class="text-right mt-4">
+            <p class="text-md text-gray-600">Shipping Fee: {{ getShippingFee() | number }} ฿</p>
+            <p class="text-lg font-semibold text-gray-700 mt-1">Total: {{ getTotalPrice() + getShippingFee() | number }} ฿</p>
+        </div>
+
+        <div class="modal-action flex justify-end gap-4 mt-6">
+            <button class="btn btn-outline" onclick="checkout_modal.close()">Cancel</button>
+            <button class="btn btn-primary"
+                [disabled]="!hasAddress() || isLoading || hasOverQuantityItems() || cartItems.length === 0"
+                (click)="handleCheckout()">
+                <span *ngIf="isLoading" class="loading loading-spinner loading-sm mr-2"></span>
+                Confirm
+            </button>
+        </div>
+    </div>
+</dialog>

@@ -1,0 +1,95 @@
+<app-navbar></app-navbar>
+<section class="w-full min-h-screen flex bg-gray-100 anuphan-regular">
+    <!-- Side Navigation -->
+    <aside class="min-w-64 bg-white border-r border-gray-200 shadow-sm p-6 hidden md:block">
+        <h2 class="text-md font-semibold mb-6 text-gray-700 border-b border-black">My Account</h2>
+        <ul class="space-y-4">
+          <li >
+            <a   routerLink="/profile" routerLinkActive="bg-gray-100 text-black font-semibold rounded-lg px-3 py-2"
+            [routerLinkActiveOptions]="{ exact: true }"
+            class="flex items-center gap-1 text-gray-600 hover:text-black transition-all px-3 py-2 rounded-lg ">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M5.121 17.804A4 4 0 018 16h8a4 4 0 012.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg> Profile Information</a>
+          </li>
+          <li>
+            <a class="flex items-center gap-1" routerLink="/bank-account" routerLinkActive="bg-gray-100 text-black font-semibold rounded-lg px-3 py-2"
+            [routerLinkActiveOptions]="{ exact: true }"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 10h18M5 6h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z" />
+            </svg>
+             Bank Account</a>
+          </li>
+          <li>
+            <a class="flex items-center gap-1"  routerLink="/order-history" routerLinkActive="bg-gray-100 text-black font-semibold rounded-lg px-3 py-2"
+            [routerLinkActiveOptions]="{ exact: true }"><svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"  viewBox="0 0 24 24">
+                <path d="M 5.75 3 A 1.0001 1.0001 0 0 0 4.8867188 3.4960938 L 3.1367188 6.4960938 A 1.0001 1.0001 0 0 0 3 7 L 3 19 C 3 20.093063 3.9069372 21 5 21 L 19 21 C 20.093063 21 21 20.093063 21 19 L 21 7 A 1.0001 1.0001 0 0 0 20.863281 6.4960938 L 19.113281 3.4960938 A 1.0001 1.0001 0 0 0 18.25 3 L 5.75 3 z M 6.3242188 5 L 17.675781 5 L 18.841797 7 L 5.1582031 7 L 6.3242188 5 z M 5 9 L 19 9 L 19 19 L 5 19 L 5 9 z M 9 11 L 9 13 L 15 13 L 15 11 L 9 11 z"></path>
+                </svg>
+             Order History</a>
+          </li>
+        </ul>
+      </aside>
+      <div class="flex-1 px-10 py-12">
+        <div class="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-xl border border-gray-200">
+          <h2 class="text-3xl font-extrabold text-gray-800 mb-6">Update Bank Account Info</h2>
+      
+          <form (ngSubmit)="submitBankForm()" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <label class="form-control w-full">
+                <span class="label-text text-gray-700 font-medium flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10l9-7 9 7M4 10h16v10H4V10zM9 21h6" />
+                  </svg>
+                   Bank Name</span>
+                <input [(ngModel)]="bankInfo.bank_name" name="bank_name" class="input input-bordered w-full" required />
+              </label>
+      
+              <label class="form-control w-full">
+                <span class="label-text text-gray-700 font-medium flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A4 4 0 018 16h8a4 4 0 012.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                   Account Name</span>
+                <input [(ngModel)]="bankInfo.account_name" name="account_name" class="input input-bordered w-full" required />
+              </label>
+      
+              <label class="form-control w-full md:col-span-2">
+                <span class="label-text text-gray-700 font-medium flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a4 4 0 00-8 0v2H5v10h14V9h-2zM9 9V7a2 2 0 114 0v2H9z" />
+                  </svg>
+                   Account Number</span>
+                <input [(ngModel)]="bankInfo.account_number" name="account_number" class="input input-bordered w-full" required />
+              </label>
+            </div>
+      
+            <div class="pt-4">
+              <span class="text-gray-700 font-medium  mb-2 flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4h6v6H4V4zM14 4h6v6h-6V4zM4 14h6v6H4v-6zM14 14h2v2h-2v-2zM18 18h2v2h-2v-2z" />
+              </svg> Upload QR Code</span>
+              <input type="file" (change)="onFileSelected($event)" class="file-input file-input-bordered w-full" />
+              <img *ngIf="previewUrl" [src]="previewUrl" class="w-36 h-auto mt-4 rounded-lg shadow border" />
+            </div>
+      
+            <div class="flex justify-end pt-6">
+              <button type="submit" class="btn btn-primary px-6 text-white shadow-md hover:shadow-lg transition-all flex items-center">
+                   Save Bank Info
+              </button>
+            </div>
+            
+          </form>
+          <div class="toast toast-top toast-end z-50">
+            <div *ngIf="showToast" class="alert alert-success text-white shadow-lg text-md">
+              <span class="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M5 13l4 4L19 7" />
+                </svg>
+                Saved successfully!
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+   
+
+    

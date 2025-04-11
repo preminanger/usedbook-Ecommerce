@@ -1,0 +1,97 @@
+<app-navbar></app-navbar>
+
+<!-- Chat Container -->
+<div class="w-full max-w-2xl mx-auto my-8 p-4 border rounded-2xl shadow bg-white h-[74.9vh] flex flex-col relative">
+    
+    <!-- 🔹 Chat Header -->
+    <div class="flex items-center gap-3 mb-4 ">
+        <!-- Back Button -->
+        <button class="btn btn-sm btn-ghost" (click)="goBack()">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
+        </svg>
+    </button>
+    
+    <!-- Avatar + Name -->
+    <div class="flex items-center gap-2">
+        <span class="font-semibold text-lg text-gray-800">
+            back
+        </span>
+    </div>
+    </div>
+    
+    <!-- 🔹 Header -->
+    <div class="flex items-center justify-center gap-2 mb-2">
+        <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="M17 20h5v-2a4 4 0 00-4-4h-1M9 20H4v-2a4 4 0 014-4h1m6-2a4 4 0 100-8 4 4 0 000 8zm-6 0a4 4 0 100-8 4 4 0 000 8z" />
+        </svg>
+        <h2 class="text-lg font-semibold text-gray-700">
+            Chatting with {{ chattingWith?.username || 'Unknown User' }}
+        </h2>
+    </div>
+
+    <!-- Chat Messages -->
+    <div id="chat-container"
+        class="flex-1 overflow-y-auto px-3 py-4 space-y-2 bg-gray-100 rounded-lg border border-gray-200"
+        style="scroll-behavior: smooth">
+
+        <div *ngFor="let msg of messages" class="w-full flex"
+            [ngClass]="msg.sender.id === currentUserId ? 'justify-end' : 'justify-start'">
+
+            <div class="max-w-[75%] px-4 py-2 rounded-2xl shadow text-sm break-words" [ngClass]="msg.sender.id === currentUserId 
+              ? 'bg-green-500 text-white rounded-br-none' 
+              : 'bg-white text-gray-800 border rounded-bl-none'">
+                <div *ngIf="msg.imageUrl">
+                    <img [src]="'http://localhost:3000' + msg.imageUrl"
+                        class="max-w-[250px] rounded-lg shadow cursor-pointer"
+                        (click)="openImageModal('http://localhost:3000' + msg.imageUrl)" />
+                </div>
+                <div *ngIf="msg.content">
+                    <p>{{ msg.content }}</p>
+                </div>
+                <small class="block text-[11px] text-gray-800 mt-1 text-right">
+                    {{ msg.timestamp | date:'shortTime' }}
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Input -->
+    <div class="flex items-center gap-2 mt-4">
+        <!-- Image Preview -->
+        <div *ngIf="selectedImagePreview" class="mt-2">
+            <img [src]="selectedImagePreview" class="w-32 rounded-lg border shadow" />
+            <button (click)="removeSelectedImage()" class="text-xs text-red-500 underline mt-1">Remove</button>
+        </div>
+
+        <!-- File input -->
+        <input type="file" accept="image/*" (change)="onImageSelected($event)" class="hidden" #fileInput />
+        <button (click)="fileInput.click()" class="btn btn-outline btn-md">
+            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30" height="30" viewBox="0,0,256,256"
+                style="fill:#1A1A1A;">
+                <g fill="#1a1a1a" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt"
+                    stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0"
+                    font-family="none" font-weight="none" font-size="none" text-anchor="none"
+                    style="mix-blend-mode: normal">
+                    <g transform="scale(5.12,5.12)">
+                        <path
+                            d="M10,11c-1.657,0 -3,1.343 -3,3v22c0,1.657 1.343,3 3,3h30c1.657,0 3,-1.343 3,-3v-22c0,-1.657 -1.343,-3 -3,-3zM10,12h30c1.105,0 2,0.895 2,2v19.0918l-8.5293,-7.66992c-1.333,-1.198 -3.3575,-1.19614 -4.6875,0.00586l-6.93164,6.26367l-3.31836,-2.83789c-1.314,-1.123 -3.24959,-1.12019 -4.55859,0.00781l-5.97461,5.14648v-20.00781c0,-1.105 0.895,-2 2,-2zM16,17c-1.657,0 -3,1.343 -3,3c0,1.657 1.343,3 3,3c1.657,0 3,-1.343 3,-3c0,-1.657 -1.343,-3 -3,-3z">
+                        </path>
+                    </g>
+                </g>
+            </svg>
+        </button>
+        <input [(ngModel)]="content" (keyup.enter)="sendMessage()" type="text" placeholder="Type your message..."
+            class="input input-bordered w-full text-sm" />
+        <button (click)="sendMessage()" class="btn btn-primary px-6">Send</button>
+    </div>
+</div>
+<app-footer></app-footer>
+<dialog id="imageModal" class="modal" (click)="closeImageModal($event)">
+    <div class="modal-box p-0 bg-black rounded-lg overflow-hidden" (click)="$event.stopPropagation()">
+        <img [src]="selectedImage" class="w-full h-auto object-contain max-h-[90vh]" alt="Full Image" />
+    </div>
+</dialog>

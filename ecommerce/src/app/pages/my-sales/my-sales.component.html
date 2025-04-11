@@ -1,0 +1,239 @@
+<app-navbar></app-navbar>
+
+<section class="w-full min-h-screen bg-gray-50 py-10 px-4 anuphan-regular">
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center"> My Sales</h1>
+
+        
+        <!-- Filter Bar -->
+        <div class="flex gap-2 mb-6 justify-center flex-wrap">
+            <button class="btn btn-sm"
+                [ngClass]="{ 'btn-primary text-white': selectedStatus === '', 'btn-outline': selectedStatus !== '' }"
+                (click)="filterByStatus('')">
+                All
+            </button>
+            <button class="btn btn-sm"
+                [ngClass]="{ 'btn-primary text-white': selectedStatus === 'paid', 'btn-outline': selectedStatus !== 'paid' }"
+                (click)="filterByStatus('paid')">
+                Paid
+            </button>
+            <button class="btn btn-sm"
+                [ngClass]="{ 'btn-primary text-white': selectedStatus === 'waiting_payment', 'btn-outline': selectedStatus !== 'waiting_payment' }"
+                (click)="filterByStatus('waiting_payment')">
+                Pending
+            </button>
+            <button class="btn btn-sm"
+                [ngClass]="{ 'btn-primary text-white': selectedStatus === 'cancelled', 'btn-outline': selectedStatus !== 'cancelled' }"
+                (click)="filterByStatus('cancelled')">
+                Cancelled
+            </button>
+            <button class="btn btn-sm"
+                [ngClass]="{ 'btn-primary text-white': selectedStatus === 'shipped', 'btn-outline': selectedStatus !== 'shipped' }"
+                (click)="filterByStatus('shipped')">
+                Shipped
+            </button>
+            <button class="btn btn-sm"
+                [ngClass]="{ 'btn-primary text-white': selectedStatus === 'delivered', 'btn-outline': selectedStatus !== 'delivered' }"
+                (click)="filterByStatus('delivered')">
+                Delivered
+            </button>
+            <button class="btn btn-sm"
+                [ngClass]="{ 'btn-primary text-white': selectedStatus === 'preparing', 'btn-outline': selectedStatus !== 'preparing' }"
+                (click)="filterByStatus('preparing')">
+                Preparing
+            </button>
+        </div>
+        <!-- sorting -->
+        <div class="flex justify-end mb-6">
+            <select class="select select-sm select-bordered w-48" [(ngModel)]="sortOption" (change)="sortOrders()">
+                <option value="latest">Sort by: Latest</option>
+                <option value="oldest">Sort by: Oldest</option>
+                <option value="high_price">Sort by: Price (High to Low)</option>
+                <option value="low_price">Sort by: Price (Low to High)</option>
+            </select>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="orders.length === 0" class="text-center mt-20">
+            <h2 class="text-xl text-gray-600 font-medium">No orders yet.</h2>
+            <p class="text-gray-400">Once customers order your books, you'll see them here.</p>
+        </div>
+
+        <!-- Orders Grid -->
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" *ngIf="orders.length > 0">
+            <div *ngFor="let order of displayedOrders" class="bg-white rounded-xl shadow p-5 border relative">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-400">Order #{{ order.order_code }}</p>
+                        <div class="text-sm text-gray-700 mt-2">
+                            <p>Product Price: ฿{{ order.price | number:'1.2-2' }}</p>
+                            <p>Shipping Fee: ฿{{ order.shippingFee ?? 0 }}</p>
+                            <p class="font-semibold text-lg text-emerald-600">
+                                Total: ฿{{ (+order.price + +(order.shippingFee ?? 0)) | number:'1.2-2' }}
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Slip Uploaded -->
+                    <span *ngIf="order.status === 'slip_uploaded'"
+                        class="badge bg-blue-100 text-blue-600 text-xs py-1 px-2 rounded-md">
+                        Slip Uploaded
+                    </span>
+                    <!-- Paid -->
+                    <span *ngIf="order.status === 'paid'"
+                        class="badge bg-green-100 text-green-600 text-xs py-1 px-2 rounded-md">
+                        Paid
+                    </span>
+                    <!-- Waiting for Payment -->
+                    <span *ngIf="order.status === 'waiting_payment'"
+                        class="badge bg-yellow-100 text-yellow-600 text-xs py-1 px-2 rounded-md">
+                        Pending Payment
+                    </span>
+                    <!-- Cancelled -->
+                    <span *ngIf="order.status === 'cancelled'"
+                        class="badge bg-gray-200 text-gray-500 text-xs py-1 px-2 rounded-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 inline-block" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 17H6a2 2 0 01-2-2V7a2 2 0 012-2h9a2 2 0 012 2v2h2.586A2 2 0 0121 10.414l.586.586A2 2 0 0122 13v2a2 2 0 01-2 2h-1M7 17a2 2 0 104 0m6 0a2 2 0 104 0" />
+                        </svg>
+                        Cancelled
+                    </span>
+                    <span *ngIf="order.status === 'shipped'"
+                        class="badge bg-sky-100 text-sky-800 text-xs py-1 px-2 rounded-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 inline-block" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 17H6a2 2 0 01-2-2V7a2 2 0 012-2h9a2 2 0 012 2v2h2.586A2 2 0 0121 10.414l.586.586A2 2 0 0122 13v2a2 2 0 01-2 2h-1M7 17a2 2 0 104 0m6 0a2 2 0 104 0" />
+                        </svg>
+                        Shipped
+                    </span>
+                    <span *ngIf="order.status === 'delivered'"
+                        class="badge bg-emerald-100 text-emerald-800 text-xs py-1 px-2 rounded-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 inline-block" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 17H6a2 2 0 01-2-2V7a2 2 0 012-2h9a2 2 0 012 2v2h2.586A2 2 0 0121 10.414l.586.586A2 2 0 0122 13v2a2 2 0 01-2 2h-1M7 17a2 2 0 104 0m6 0a2 2 0 104 0" />
+                        </svg>
+                        Delivered
+                    </span>
+                    <span *ngIf="order.status === 'preparing'"
+                        class="badge bg-orange-100 text-orange-700 text-xs py-1 px-2 rounded-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 inline-block" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 17H6a2 2 0 01-2-2V7a2 2 0 012-2h9a2 2 0 012 2v2h2.586A2 2 0 0121 10.414l.586.586A2 2 0 0122 13v2a2 2 0 01-2 2h-1M7 17a2 2 0 104 0m6 0a2 2 0 104 0" />
+                        </svg>
+                        Preparing
+                    </span>
+                </div>
+                <p class="text-sm text-gray-500 mt-2">{{ order.created_at | date:'medium' }}</p>
+                <p class="text-sm text-gray-600">Buyer: <span class="text-gray-800 font-medium">{{ order.user.username
+                        }}</span></p>
+                <div class="bg-gray-50 border border-gray-100 p-3 rounded-lg mt-2 text-sm">
+                    <div class="flex items-center gap-1 font-medium text-gray-700 mb-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600 inline-block mr-1"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 11c1.104 0 2-.896 2-2s-.896-2-2-2-2 .896-2 2 .896 2 2 2zM12 22s8-4.5 8-10c0-4.418-3.582-8-8-8S4 7.582 4 12c0 5.5 8 10 8 10z" />
+                        </svg>
+                        Shipping Address
+                    </div>
+                    <p class="text-gray-600">
+                        {{ order.shippingAddress?.houseNumber || '-'}},
+                        {{ order.shippingAddress?.street || '-'}},
+                        {{ order.shippingAddress?.district || '-'}},
+                        {{ order.shippingAddress?.province || '-'}},
+                        {{ order.shippingAddress?.postalCode || '-'}},
+                        {{ order.shippingAddress?.additionalInfo || '-'}}
+                    </p>
+                </div>
+
+                <!-- Item preview -->
+                <div class="mt-4 space-y-2 max-h-28 overflow-y-auto">
+                    <div *ngFor="let item of order.orderItems" class="flex items-center gap-2">
+
+                        <div>
+                            <p class="text-sm font-medium text-gray-700">{{ item.pokemon.name }}</p>
+                            <p class="text-xs text-gray-500">{{ item.quantity }} × ฿{{ item.pokemon.price }}</p>
+                        </div>
+                    </div>
+                    <div *ngIf="order.trackingNumber && order.shippingProvider" class="mt-2">
+                        <p class="text-sm text-gray-500">
+                            <span class="font-medium">Tracking:</span>
+                            <a [href]="getTrackingUrl(order.shippingProvider, order.trackingNumber)"
+                                class="text-blue-600 underline" target="_blank">
+                                {{ order.trackingNumber }} ({{ getProviderName(order.shippingProvider) }})
+                            </a>
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="mt-4">
+                    <div class="grid grid-cols-2 gap-2">
+                        <button *ngIf="order.status === 'slip_uploaded'" (click)="rejectPayment(order.id)"
+                            class="btn btn-sm btn-error w-full text-white">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            Reject Payment
+                        </button>
+                        <button *ngIf="order.status === 'slip_uploaded'" (click)="markAsPaid(order.id)"
+                            class="btn btn-sm btn-success w-full mb-2 text-white">
+                            <svg fill="#FFFFFF" width="12px" height="12px" viewBox="0 0 335.765 335.765"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <polygon
+                                    points="311.757,41.803 107.573,245.96 23.986,162.364 0,186.393 107.573,293.962 335.765,65.795">
+                                </polygon>
+                            </svg>Mark as Paid
+                        </button>
+                        <button *ngIf="['paid', 'preparing', 'shipped', 'delivered'].includes(order.status)"
+                            class="btn btn-sm bg-sky-600 text-white mb-4" (click)="openShippingModal(order)">
+                            update shipping
+                        </button>
+                    </div>
+                    <a *ngIf="order.payment_proof" [href]="'http://localhost:3000' + order.payment_proof"
+                        target="_blank" class="btn btn-outline btn-sm w-full text-blue-600">
+                        View Payment Slip
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <div class="text-center mt-6" *ngIf="displayedOrders.length < filteredOrders.length">
+        <button class="btn btn-outline" (click)="loadMoreOrders()">Load More</button>
+    </div>
+</section>
+<app-footer></app-footer>
+<!-- Modal -->
+<dialog id="shipping_modal" class="modal bg-black/30 backdrop-blur-sm" [open]="showShippingModal" (click)="closeOnOutsideClick($event)">
+    <div class="modal-box w-full max-w-md" (click)="$event.stopPropagation()">
+      <h3 class="font-bold text-lg mb-4">Update Shipping</h3>
+  
+      <div class="space-y-3" *ngIf="selectedShippingUpdate">
+        <input class="input input-bordered w-full" type="text"
+          [(ngModel)]="selectedShippingUpdate.trackingNumber" placeholder="Tracking Number" />
+  
+        <select class="select select-bordered w-full" [(ngModel)]="selectedShippingUpdate.shippingProvider">
+          <option value="flash">Flash Express</option>
+          <option value="kerry">Kerry Express</option>
+          <option value="thailand-post">Thailand Post</option>
+        </select>
+  
+        <select class="select select-bordered w-full" [(ngModel)]="selectedShippingUpdate.status">
+          <option value="preparing">Preparing</option>
+          <option value="shipped">Shipped</option>
+          <option value="delivered">Delivered</option>
+        </select>
+      </div>
+  
+      <div class="modal-action mt-6 flex justify-end gap-3">
+        <button class="btn btn-primary" (click)="submitShippingModal()">Confirm</button>
+      </div>
+    </div>
+  </dialog>
+  

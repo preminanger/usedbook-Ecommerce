@@ -1,0 +1,26 @@
+<app-navbar></app-navbar>
+<div class="max-w-3xl mx-auto mt-6 p-4 h-screen">
+    <h2 class="text-xl font-bold mb-4 flex items-center gap-2"><svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg"  fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M22 3L2 12l6 2 2 6L22 3zM22 3l-10 10"/>
+      </svg>
+       Your Conversations</h2>
+
+    <div *ngIf="inboxList.length === 0" class="text-center text-gray-500 italic">
+        No conversations yet. Start chatting now <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10z"/>
+          </svg>
+          
+      </div>
+    <div *ngFor="let chat of inboxList" (click)="goToChat(chat.otherUser.id)"
+        class="border rounded-lg p-3 mb-3 flex justify-between items-center bg-white shadow-sm cursor-pointer hover:bg-gray-100 transition hover:translate-y-1">
+        <div class="flex items-center gap-3">
+            <img [src]="'http://localhost:3000/' + chat.otherUser.profileUrl"
+            class="w-10 h-10 rounded-full object-cover border" />
+            <div>
+                <p class="font-semibold">{{ chat.otherUser.username }}</p>
+                <p class="text-sm text-gray-500 truncate max-w-xs">{{ chat.lastMessage }}</p>
+            </div>
+        </div>
+        </div>
+    </div>
+    <app-footer></app-footer>
